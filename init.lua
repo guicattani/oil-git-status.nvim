@@ -1,12 +1,34 @@
 local oil = require("oil")
 local namespace = vim.api.nvim_create_namespace("oil-git-status")
-local system = require("oil-git-status.system").system
+local function system(cmd, opts, cb)
+  local stdout
+  local stderr
+
+  vim.fn.jobstart(cmd, {
+    cwd = opts.cwd,
+    stdout_buffered = true,
+    stderr_buffered = true,
+    on_exit = function(_, code)
+      cb({
+        code = code,
+        stdout = stdout,
+        stderr = stderr,
+      })
+    end,
+    on_stdout = function(_, lines)
+      stdout = vim.fn.join(lines, "\n")
+    end,
+    on_stderr = function(_, lines)
+      stderr = vim.fn.join(lines, "\n")
+    end,
+  })
+end
 
 local default_config = {
   show_ignored = true,
   base_branch = "HEAD",
   -- When true, also include committed changes relative to base_branch (base...HEAD)
-  -- in the index column.
+  -- in the index column. Defaults to false to preserve existing behavior.
   include_committed = false,
   symbols = {
     index = {},

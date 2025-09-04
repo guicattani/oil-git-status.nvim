@@ -50,7 +50,9 @@ use {
 
 ```lua
 require('oil-git-status').setup({
-  show_ignored = true -- show files that match gitignore with !!
+  show_ignored = true, -- show files that match gitignore with !!
+  base_branch = 'HEAD', -- base branch to compare against (can be "main", "master", "origin/main", etc.)
+  include_committed = true, -- when true, also show committed changes vs base (base...HEAD)
   symbols = { -- customize the symbols that appear in the git status columns
     index = {
       ["!"] = "!",
